@@ -1,0 +1,144 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Home - Pneumonia Detection{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <h1 class="hero-title"> Pneumonia Detection System</h1>
+        <p class="hero-subtitle">AI-powered pneumonia detection for improved diagnosis and treatment of children</p>
+        
+        {% if user.is_authenticated %}
+            <div class="d-flex justify-content-center gap-3">
+                {% if user.groups.all.0.name == 'Lab Technician' or user.is_staff %}
+                    <a href="{% url 'lab_dashboard' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-microscope me-2"></i> Lab Dashboard
+                    </a>
+                    <a href="{% url 'upload_xray' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-upload me-2"></i> Upload X-ray
+                    </a>
+                {% elif user.groups.all.0.name == 'Doctor' or user.is_staff %}
+                    <a href="{% url 'doctor_dashboard' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-user-md me-2"></i> Doctor Dashboard
+                    </a>
+                    <a href="{% url 'assigned_xrays' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-tasks me-2"></i> Review X-rays
+                    </a>
+                {% endif %}
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i> Login to System
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container mt-5">
+    <!-- System Overview -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h2 class="mb-4">AI-Powered Pneumonia Detection</h2>
+            <p class="lead">Our system uses advanced artificial intelligence to analyze chest X-rays and detect pneumonia in children with high accuracy.</p>
+            <p>Pneumonia is a leading cause of death in children under 5 years old worldwide. Early and accurate diagnosis is crucial for effective treatment and improved outcomes.</p>
+            <p>This system helps healthcare professionals by:</p>
+            <ul>
+                <li>Providing quick preliminary analysis of chest X-rays</li>
+                <li>Highlighting potential pneumonia cases for priority review</li>
+                <li>Maintaining comprehensive patient records and history</li>
+                <li>Generating detailed medical reports</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'main/pnemonia.webp' %}" alt="X-ray Analysis" class="img-fluid rounded shadow-lg">
+        </div>
+    </div>
+    
+    <!-- System Statistics -->
+    {% if stats %}
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>System Statistics</h2>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h4>{{ stats.patients }}</h4>
+                <p>Total Patients</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-x-ray"></i>
+                </div>
+                <h4>{{ stats.xrays }}</h4>
+                <p>X-rays Analyzed</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                <h4>{{ stats.reports }}</h4>
+                <p>Reports Generated</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h4>{{ stats.positive_cases }}</h4>
+                <p>Positive Cases</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Features -->
+    <div class="row mb-5">
+        <div class="col-12 text-center mb-4">
+            <h2>Key Features</h2>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h4>AI Analysis</h4>
+                <p>Advanced machine learning algorithms analyze X-ray images to detect pneumonia patterns with high accuracy.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h4>Doctor Review</h4>
+                <p>Medical professionals review AI analysis results and provide final diagnosis with detailed recommendations.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h4>Analytics</h4>
+                <p>Comprehensive dashboards and reports provide insights into patient outcomes and system performance.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

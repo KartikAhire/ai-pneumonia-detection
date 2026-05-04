@@ -1,0 +1,142 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Add Patient - Pneumonia Detection{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-user-plus text-primary"></i> Add New Patient</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                                        {{ form.name.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger">{{ form.name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">
+                                        {{ form.date_of_birth.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.date_of_birth }}
+                                    {% if form.date_of_birth.errors %}
+                                        <div class="text-danger">{{ form.date_of_birth.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.gender.id_for_label }}" class="form-label">
+                                        {{ form.gender.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.gender }}
+                                    {% if form.gender.errors %}
+                                        <div class="text-danger">{{ form.gender.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.guardian_name.id_for_label }}" class="form-label">
+                                        {{ form.guardian_name.label }}
+                                    </label>
+                                    {{ form.guardian_name }}
+                                    {% if form.guardian_name.errors %}
+                                        <div class="text-danger">{{ form.guardian_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                        {{ form.phone.label }}
+                                    </label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger">{{ form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                                        {{ form.email.label }}
+                                    </label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.address.id_for_label }}" class="form-label">
+                                {{ form.address.label }}
+                            </label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <div class="text-danger">{{ form.address.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.medical_history.id_for_label }}" class="form-label">
+                                {{ form.medical_history.label }}
+                            </label>
+                            {{ form.medical_history }}
+                            {% if form.medical_history.errors %}
+                                <div class="text-danger">{{ form.medical_history.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">Include any relevant medical history, allergies, or previous conditions</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'patients' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Patient
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-calculate age from date of birth
+document.getElementById('id_date_of_birth').addEventListener('change', function() {
+    const dob = new Date(this.value);
+    const today = new Date();
+    const age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+    
+    if (age >= 0 && age <= 18) {
+        // Age is automatically calculated in the model
+        console.log('Age calculated:', age);
+    }
+});
+</script>
+{% endblock %}

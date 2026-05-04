@@ -1,0 +1,129 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Profile - {{ user.get_full_name|default:user.username }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-user-circle text-primary"></i> User Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Personal Information</h5>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ user_form.first_name.id_for_label }}" class="form-label">
+                                        {{ user_form.first_name.label }}
+                                    </label>
+                                    {{ user_form.first_name }}
+                                    {% if user_form.first_name.errors %}
+                                        <div class="text-danger">{{ user_form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ user_form.last_name.id_for_label }}" class="form-label">
+                                        {{ user_form.last_name.label }}
+                                    </label>
+                                    {{ user_form.last_name }}
+                                    {% if user_form.last_name.errors %}
+                                        <div class="text-danger">{{ user_form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ user_form.email.id_for_label }}" class="form-label">
+                                        {{ user_form.email.label }}
+                                    </label>
+                                    {{ user_form.email }}
+                                    {% if user_form.email.errors %}
+                                        <div class="text-danger">{{ user_form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                                    <div class="form-text">Username cannot be changed</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Role</label>
+                                    <input type="text" class="form-control" value="{{ user.groups.all.0.name|default:'Staff' }}" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h5>Additional Information</h5>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ profile_form.profile_picture.id_for_label }}" class="form-label">
+                                        {{ profile_form.profile_picture.label }}
+                                    </label>
+                                    {{ profile_form.profile_picture }}
+                                    {% if profile_form.profile_picture.errors %}
+                                        <div class="text-danger">{{ profile_form.profile_picture.errors }}</div>
+                                    {% endif %}
+                                    {% if user.profile.profile_picture %}
+                                        <div class="mt-2">
+                                            <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" 
+                                                 class="img-thumbnail" style="max-width: 100px;">
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ profile_form.phone.id_for_label }}" class="form-label">
+                                        {{ profile_form.phone.label }}
+                                    </label>
+                                    {{ profile_form.phone }}
+                                    {% if profile_form.phone.errors %}
+                                        <div class="text-danger">{{ profile_form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ profile_form.specialty.id_for_label }}" class="form-label">
+                                        {{ profile_form.specialty.label }}
+                                    </label>
+                                    {{ profile_form.specialty }}
+                                    {% if profile_form.specialty.errors %}
+                                        <div class="text-danger">{{ profile_form.specialty.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="{{ profile_form.bio.id_for_label }}" class="form-label">
+                                        {{ profile_form.bio.label }}
+                                    </label>
+                                    {{ profile_form.bio }}
+                                    {% if profile_form.bio.errors %}
+                                        <div class="text-danger">{{ profile_form.bio.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'home' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

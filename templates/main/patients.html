@@ -1,0 +1,224 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Patients - Pneumonia Detection{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-users text-primary"></i> Patient Management</h2>
+                <a href="{% url 'add_patient' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Patient
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Search Patient</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   placeholder="Name, ID, or Phone" value="{{ request.GET.search }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="age_range" class="form-label">Age Range</label>
+                            <select class="form-select" id="age_range" name="age_range">
+                                <option value="">All Ages</option>
+                                <option value="0-2" {% if request.GET.age_range == '0-2' %}selected{% endif %}>0-2 years</option>
+                                <option value="3-5" {% if request.GET.age_range == '3-5' %}selected{% endif %}>3-5 years</option>
+                                <option value="6-10" {% if request.GET.age_range == '6-10' %}selected{% endif %}>6-10 years</option>
+                                <option value="11-18" {% if request.GET.age_range == '11-18' %}selected{% endif %}>11-18 years</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="">All Genders</option>
+                                <option value="M" {% if request.GET.gender == 'M' %}selected{% endif %}>Male</option>
+                                <option value="F" {% if request.GET.gender == 'F' %}selected{% endif %}>Female</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patients List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-list"></i> Patient List ({{ patients.count }} patients)</h5>
+                </div>
+                <div class="card-body">
+                    {% if patients %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Patient ID</th>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Contact</th>
+                                        <th>Registration Date</th>
+                                        <th>X-rays</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for patient in patients %}
+                                    <tr>
+                                        <td><strong>{{ patient.patient_id }}</strong></td>
+                                        <td>
+                                            <strong>{{ patient.name }}</strong><br>
+                                            {% if patient.guardian_name %}
+                                                <small class="text-muted">Guardian: {{ patient.guardian_name }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ patient.age }} years</td>
+                                        <td>
+                                            {% if patient.gender == 'M' %}
+                                                <i class="fas fa-mars text-primary"></i> Male
+                                            {% else %}
+                                                <i class="fas fa-venus text-danger"></i> Female
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if patient.phone %}
+                                                <i class="fas fa-phone"></i> {{ patient.phone }}<br>
+                                            {% endif %}
+                                            {% if patient.email %}
+                                                <i class="fas fa-envelope"></i> {{ patient.email }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ patient.created_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ patient.xray_set.count }} X-rays</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="#" class="btn btn-sm btn-outline-primary" 
+                                                   data-bs-toggle="modal" data-bs-target="#patientModal{{ patient.id }}">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                <a href="{% url 'upload_xray' %}?patient={{ patient.id }}" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-upload"></i> X-ray
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        {% if is_paginated %}
+                        <nav aria-label="Patient pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">First</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                </li>
+                                
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Last</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-user-plus fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No patients found</h5>
+                            <p class="text-muted">Start by adding your first patient</p>
+                            <a href="{% url 'add_patient' %}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Patient
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Detail Modals -->
+{% for patient in patients %}
+<div class="modal fade" id="patientModal{{ patient.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Patient Details - {{ patient.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Personal Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Patient ID:</strong></td><td>{{ patient.patient_id }}</td></tr>
+                            <tr><td><strong>Name:</strong></td><td>{{ patient.name }}</td></tr>
+                            <tr><td><strong>Age:</strong></td><td>{{ patient.age }} years</td></tr>
+                            <tr><td><strong>Gender:</strong></td><td>{{ patient.get_gender_display }}</td></tr>
+                            <tr><td><strong>Date of Birth:</strong></td><td>{{ patient.date_of_birth|date:"M d, Y" }}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Contact Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Guardian:</strong></td><td>{{ patient.guardian_name|default:"Not specified" }}</td></tr>
+                            <tr><td><strong>Phone:</strong></td><td>{{ patient.phone|default:"Not provided" }}</td></tr>
+                            <tr><td><strong>Email:</strong></td><td>{{ patient.email|default:"Not provided" }}</td></tr>
+                            <tr><td><strong>Address:</strong></td><td>{{ patient.address|default:"Not provided" }}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                {% if patient.medical_history %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Medical History</h6>
+                        <p class="text-muted">{{ patient.medical_history }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="{% url 'upload_xray' %}?patient={{ patient.id }}" class="btn btn-primary">Upload X-ray</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

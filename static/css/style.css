@@ -1,0 +1,327 @@
+/* Child Pneumonia Detection System - Custom Styles */
+
+/* Global Styles */
+:root {
+  --primary-color: #0d6efd;
+  --secondary-color: #6c757d;
+  --success-color: #198754;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #0dcaf0;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  line-height: 1.6;
+}
+
+/* Navigation */
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--primary-color) !important;
+}
+
+/* Cards */
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background: linear-gradient(135deg, var(--primary-color), #0056b3);
+  color: white;
+  border-radius: 12px 12px 0 0 !important;
+  border: none;
+  font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), #0056b3);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-1px);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success-color), #146c43);
+  border: none;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger-color), #b02a37);
+  border: none;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, var(--warning-color), #ffca2c);
+  border: none;
+  color: #000;
+}
+
+/* Forms */
+.form-control,
+.form-select {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+/* Tables */
+.table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead th {
+  background-color: var(--light-color);
+  border: none;
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Badges */
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 0.5em 0.75em;
+}
+
+/* Progress bars */
+.progress {
+  border-radius: 8px;
+  background-color: #e9ecef;
+}
+
+.progress-bar {
+  border-radius: 8px;
+  transition: width 0.6s ease;
+}
+
+/* X-ray Image Display */
+.xray-image {
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.xray-image:hover {
+  transform: scale(1.05);
+}
+
+/* AI Analysis Results */
+.ai-result-positive {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.ai-result-negative {
+  background: linear-gradient(135deg, #51cf66, #40c057);
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* Confidence Score Display */
+.confidence-display {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.confidence-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.confidence-high {
+  background: linear-gradient(135deg, #51cf66, #40c057);
+}
+
+.confidence-medium {
+  background: linear-gradient(135deg, #ffd43b, #fab005);
+  color: #000;
+}
+
+.confidence-low {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4rem 0;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+/* Feature Cards */
+.feature-card {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+/* Loading States */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 0.5rem;
+  }
+
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .table-responsive {
+    border-radius: 8px;
+  }
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Footer */
+.footer {
+  background: linear-gradient(135deg, var(--dark-color), #495057);
+  color: white;
+  padding: 2rem 0;
+  margin-top: 3rem;
+}
+
+/* Utility Classes */
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary-color), #0056b3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+.border-radius-lg {
+  border-radius: 15px !important;
+}

@@ -1,0 +1,214 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}X-ray Details - {{ xray.patient.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-x-ray text-primary"></i> X-ray Details</h2>
+                <div class="d-flex gap-2">
+                    {% if xray.status == 'pending' and user.groups.all.0.name == 'Lab Technician' or user.is_staff %}
+                        <a href="{% url 'analyze_xray' xray.id %}" class="btn btn-success">
+                            <i class="fas fa-robot"></i> Analyze with AI
+                        </a>
+                    {% endif %}
+                    {% if xray.status == 'analyzed' and not report and user.groups.all.0.name == 'Doctor' or user.is_staff %}
+                        <a href="{% url 'create_report' xray.id %}" class="btn btn-primary">
+                            <i class="fas fa-file-medical"></i> Create Report
+                        </a>
+                    {% endif %}
+                    {% if report and report.pdf_file %}
+                        <a href="{% url 'download_report' report.id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-download"></i> Download Report
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Patient Information -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-user"></i> Patient Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Patient ID:</strong></td>
+                            <td>{{ xray.patient.patient_id }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Name:</strong></td>
+                            <td>{{ xray.patient.name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Age:</strong></td>
+                            <td>{{ xray.patient.age }} years</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gender:</strong></td>
+                            <td>{{ xray.patient.get_gender_display }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Guardian:</strong></td>
+                            <td>{{ xray.patient.guardian_name|default:"Not specified" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Phone:</strong></td>
+                            <td>{{ xray.patient.phone|default:"Not provided" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- X-ray Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle"></i> X-ray Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Upload Date:</strong></td>
+                            <td>{{ xray.upload_date|date:"M d, Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Status:</strong></td>
+                            <td>
+                                {% if xray.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif xray.status == 'analyzed' %}
+                                    <span class="badge bg-success">Analyzed</span>
+                                {% elif xray.status == 'reported' %}
+                                    <span class="badge bg-info">Reported</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if xray.analyzed_by %}
+                        <tr>
+                            <td><strong>Analyzed By:</strong></td>
+                            <td>{{ xray.analyzed_by.get_full_name|default:xray.analyzed_by.username }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Analysis Date:</strong></td>
+                            <td>{{ xray.analyzed_at|date:"M d, Y H:i" }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if xray.notes %}
+                        <tr>
+                            <td><strong>Notes:</strong></td>
+                            <td>{{ xray.notes }}</td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- X-ray Image and Analysis -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-image"></i> X-ray Image</h5>
+                </div>
+                <div class="card-body text-center">
+                    <img src="{{ xray.image.url }}" alt="X-ray for {{ xray.patient.name }}" 
+                         class="img-fluid xray-image" style="max-height: 500px;">
+                </div>
+            </div>
+
+            <!-- AI Analysis Results -->
+            {% if xray.ai_result %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-robot"></i> AI Analysis Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="{% if xray.ai_result == 'positive' %}ai-result-positive{% else %}ai-result-negative{% endif %}">
+                                <h4>
+                                    {% if xray.ai_result == 'positive' %}
+                                        <i class="fas fa-exclamation-triangle"></i> Pneumonia Detected
+                                    {% else %}
+                                        <i class="fas fa-check-circle"></i> Normal
+                                    {% endif %}
+                                </h4>
+                                <p class="mb-0">AI Analysis Result</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="confidence-display">
+                                <div class="confidence-circle {% if xray.confidence_score >= 80 %}confidence-high{% elif xray.confidence_score >= 60 %}confidence-medium{% else %}confidence-low{% endif %}">
+                                    {{ xray.confidence_score }}%
+                                </div>
+                                <h6>Confidence Score</h6>
+                                <p class="text-muted mb-0">
+                                    {% if xray.confidence_score >= 80 %}
+                                        High Confidence
+                                    {% elif xray.confidence_score >= 60 %}
+                                        Medium Confidence
+                                    {% else %}
+                                        Low Confidence
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Medical Report -->
+            {% if report %}
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-file-medical"></i> Medical Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Doctor:</strong> {{ report.doctor.get_full_name|default:report.doctor.username }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Report Date:</strong> {{ report.created_at|date:"M d, Y H:i" }}
+                        </div>
+                    </div>
+                    
+                    {% if report.severity %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>Severity:</strong> 
+                            <span class="badge {% if report.severity == 'severe' %}bg-danger{% elif report.severity == 'moderate' %}bg-warning{% else %}bg-success{% endif %}">
+                                {{ report.severity|capfirst }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h6>Diagnosis:</h6>
+                            <p>{{ report.diagnosis }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Recommendations:</h6>
+                            <p>{{ report.recommendations }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Assigned X-rays - Pneumonia Detection{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-tasks text-primary"></i> Assigned X-rays for Review</h2>
+                <a href="{% url 'doctor_dashboard' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Options -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="">All Status</option>
+                                <option value="analyzed" {% if request.GET.status == 'analyzed' %}selected{% endif %}>Analyzed</option>
+                                <option value="reported" {% if request.GET.status == 'reported' %}selected{% endif %}>Reported</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="ai_result" class="form-label">AI Result</label>
+                            <select class="form-select" id="ai_result" name="ai_result">
+                                <option value="">All Results</option>
+                                <option value="positive" {% if request.GET.ai_result == 'positive' %}selected{% endif %}>Pneumonia Detected</option>
+                                <option value="negative" {% if request.GET.ai_result == 'negative' %}selected{% endif %}>Normal</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="priority" class="form-label">Priority</label>
+                            <select class="form-select" id="priority" name="priority">
+                                <option value="">All Priorities</option>
+                                <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>High</option>
+                                <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Medium</option>
+                                <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Low</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- X-rays List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-clipboard-list"></i> X-rays Requiring Review ({{ xrays.count }} cases)</h5>
+                </div>
+                <div class="card-body">
+                    {% if xrays %}
+                        <div class="row">
+                            {% for xray in xrays %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card h-100 {% if xray.ai_result == 'positive' and xray.confidence_score >= 80 %}border-danger{% elif xray.ai_result == 'positive' %}border-warning{% else %}border-success{% endif %}">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">{{ xray.patient.name }}</h6>
+                                        {% if xray.ai_result == 'positive' and xray.confidence_score >= 80 %}
+                                            <span class="badge bg-danger">High Priority</span>
+                                        {% elif xray.ai_result == 'positive' %}
+                                            <span class="badge bg-warning">Medium Priority</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Low Priority</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="text-center mb-3">
+                                            <img src="{{ xray.image.url }}" alt="X-ray" class="img-fluid rounded" style="max-height: 150px;">
+                                        </div>
+                                        
+                                        <div class="mb-2">
+                                            <small class="text-muted">Patient Info:</small><br>
+                                            <strong>{{ xray.patient.age }} years, {{ xray.patient.get_gender_display }}</strong>
+                                        </div>
+                                        
+                                        <div class="mb-2">
+                                            <small class="text-muted">Upload Date:</small><br>
+                                            {{ xray.upload_date|date:"M d, Y H:i" }}
+                                        </div>
+                                        
+                                        <div class="mb-2">
+                                            <small class="text-muted">AI Analysis:</small><br>
+                                            {% if xray.ai_result == 'positive' %}
+                                                <span class="badge bg-danger">Pneumonia Detected</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Normal</span>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <small class="text-muted">Confidence:</small>
+                                            <div class="progress mt-1" style="height: 20px;">
+                                                <div class="progress-bar {% if xray.confidence_score >= 80 %}bg-success{% elif xray.confidence_score >= 60 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                     style="width: {{ xray.confidence_score }}%">
+                                                    {{ xray.confidence_score }}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if xray.notes %}
+                                        <div class="mb-2">
+                                            <small class="text-muted">Notes:</small><br>
+                                            <small>{{ xray.notes|truncatewords:10 }}</small>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'xray_detail' xray.id %}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-eye"></i> Review Details
+                                            </a>
+                                            {% if not xray.report %}
+                                                <a href="{% url 'create_report' xray.id %}" class="btn btn-success btn-sm">
+                                                    <i class="fas fa-file-medical"></i> Create Report
+                                                </a>
+                                            {% else %}
+                                                <span class="badge bg-info">Report Created</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-clipboard-check fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No X-rays assigned for review</h5>
+                            <p class="text-muted">All assigned cases have been reviewed or no cases match your filter criteria</p>
+                            <a href="{% url 'doctor_dashboard' %}" class="btn btn-primary">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

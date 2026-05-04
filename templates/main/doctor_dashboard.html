@@ -1,0 +1,176 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Doctor Dashboard - Pneumonia Detection{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-user-md text-primary"></i> Doctor Dashboard</h2>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'assigned_xrays' %}" class="btn btn-primary">
+                        <i class="fas fa-tasks"></i> Assigned X-rays
+                    </a>
+                    <a href="{% url 'reports' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-file-medical"></i> Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ assigned_cases }}</h4>
+                            <p class="mb-0">Assigned Cases</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clipboard-list fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ pending_review }}</h4>
+                            <p class="mb-0">Pending Review</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-hourglass-half fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ completed_reports }}</h4>
+                            <p class="mb-0">Completed Reports</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-double fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ urgent_cases }}</h4>
+                            <p class="mb-0">Urgent Cases</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assigned X-rays for Review -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-stethoscope"></i> X-rays Requiring Review</h5>
+                </div>
+                <div class="card-body">
+                    {% if assigned_xrays %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Upload Date</th>
+                                        <th>AI Analysis</th>
+                                        <th>Confidence</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for xray in assigned_xrays %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ xray.patient.name }}</strong><br>
+                                            <small class="text-muted">{{ xray.patient.age }} years, {{ xray.patient.gender }}</small>
+                                        </td>
+                                        <td>{{ xray.upload_date|date:"M d, Y H:i" }}</td>
+                                        <td>
+                                            {% if xray.ai_result == 'positive' %}
+                                                <span class="badge bg-danger">Pneumonia Detected</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Normal</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar {% if xray.confidence_score >= 80 %}bg-success{% elif xray.confidence_score >= 60 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                                     style="width: {{ xray.confidence_score }}%">
+                                                    {{ xray.confidence_score }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if xray.ai_result == 'positive' and xray.confidence_score >= 80 %}
+                                                <span class="badge bg-danger">High</span>
+                                            {% elif xray.ai_result == 'positive' %}
+                                                <span class="badge bg-warning">Medium</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Low</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if xray.report %}
+                                                <span class="badge bg-info">Reported</span>
+                                            {% else %}
+                                                <span class="badge bg-warning">Pending</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'xray_detail' xray.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> Review
+                                            </a>
+                                            {% if not xray.report %}
+                                                <a href="{% url 'create_report' xray.id %}" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-file-medical"></i> Report
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-clipboard-check fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No cases assigned for review</h5>
+                            <p class="text-muted">All assigned cases have been reviewed</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
