@@ -1,6 +1,6 @@
-# 🌍 Veank Global Export
+# 🩺 Pneumonia Detection System using Machine Learning
 
-A professional agricultural export platform designed to connect Indian farmers with global markets and showcase high-quality export products.
+A smart healthcare-based AI system designed to detect pneumonia from chest X-ray images using Machine Learning and CNN (Convolutional Neural Network).
 
 ---
 
@@ -12,33 +12,54 @@ A professional agricultural export platform designed to connect Indian farmers w
 
 ## 📌 About the Project
 
-This platform helps promote and export agricultural products globally by providing:
+The system uses a CNN-based deep learning model trained on chest X-ray datasets to classify images into:
 
-* Direct farmer sourcing
-* Premium product showcase
-* Easy buyer inquiry system
-* Transparent supply chain
+* Normal
+* Pneumonia
+
+The platform also includes dashboards to visualize:
+* Patient details
+* AI prediction results
+* Confidence scores
+* Priority levels for review
 
 ---
 
-## 🌾 Key Features
 
-* 🌍 Export-focused business website
-* 📦 Product categories (Grains, Powders, Eco Products)
-* 📍 Location-based information
-* 📞 Contact & inquiry system
-* 💻 Clean, modern UI
+## 🌟 Key Features
+
+* 🩻 Chest X-ray image analysis
+* 🤖 CNN-based pneumonia prediction
+* 📊 Confidence score generation
+* 👨‍⚕️ Doctor dashboard
+* 🧪 Lab dashboard
+* 📂 X-ray image management
+* 💻 Simple and user-friendly interface
 
 ---
 
 ## 🛠️ Tech Stack
 
+* Python
+* Machine Learning
+* Deep Learning (CNN)
+* Flask
 * HTML
 * CSS
 * JavaScript
-* Responsive Design
 
 ---
+
+## 🧠 Machine Learning Model Used
+
+### CNN (Convolutional Neural Network)
+
+The project uses a CNN model for image classification to detect pneumonia patterns from chest X-ray images.
+
+The model was trained and tested on medical imaging datasets to improve prediction performance.
+
+---
+
 
 ## 📸 Screenshots
 
@@ -66,12 +87,13 @@ This platform helps promote and export agricultural products globally by providi
 ![Contact](PASTE_YOUR_IMAGE_LINK)
 
 ---
+## ⚙️ System Workflow
 
-## 🎯 Business Impact
-
-* Connecting farmers with global buyers
-* Promoting Indian agricultural exports
-* Improving product visibility
+1. Upload chest X-ray image
+2. Preprocess image data
+3. CNN model analyzes image
+4. Generate prediction result
+5. Display confidence score & status
 
 ---
 
