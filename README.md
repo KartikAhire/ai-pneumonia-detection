@@ -4,12 +4,6 @@ A smart healthcare-based AI system designed to detect pneumonia from chest X-ray
 
 ---
 
-## 🚀 Live Website
-
-👉 https://www.veankglobalexport.com/
-
----
-
 ## 📌 About the Project
 
 The system uses a CNN-based deep learning model trained on chest X-ray datasets to classify images into:
